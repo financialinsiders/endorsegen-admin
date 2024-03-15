@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "lobby-fi": {
+      "hosting": {
+        "fuse": [
+          "lobby-fi"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "lobby-fi"
+  }
+}
