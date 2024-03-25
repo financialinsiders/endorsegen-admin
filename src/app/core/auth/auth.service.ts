@@ -81,6 +81,9 @@ export class AuthService {
         email: string;
         password: string;
     }): Observable<any> {
+        if (this._authenticated) {
+            return throwError('User is already logged in.');
+        }
         return from(
             this.auth
                 .signInWithEmailAndPassword(
@@ -88,10 +91,7 @@ export class AuthService {
                     credentials.password
                 )
                 .then((response) => {
-                    response.user.getIdToken().then((token) => {
-                        this.accessToken = token;
-                        
-                    });
+                    this.accessToken = response.user.uid
                     this._authenticated = true;
                     this._userService.user = {
                         id: response.user.providerId,
@@ -109,8 +109,9 @@ export class AuthService {
      */
     signInUsingToken(): Observable<any> {
         // Sign in using the token
+        debugger
         return this._httpClient
-            .post('api/auth/sign-in-with-token', {
+            .post('v1/firebase/getCustomToken', {
                 accessToken: this.accessToken,
             })
             .pipe(
@@ -119,27 +120,44 @@ export class AuthService {
                     of(false)
                 ),
                 switchMap((response: any) => {
-                    // Replace the access token with the new one if it's available on
-                    // the response object.
-                    //
-                    // This is an added optional step for better security. Once you sign
-                    // in using the token, you should generate a new one on the server
-                    // side and attach it to the response object. Then the following
-                    // piece of code can replace the token with the refreshed one.
-                    if (response.accessToken) {
-                        this.accessToken = response.accessToken;
-                    }
-
-                    // Set the authenticated flag to true
-                    this._authenticated = true;
-
-                    // Store the user on the user service
-                    this._userService.user = response.user;
-
-                    // Return true
-                    return of(true);
+                    return from(this.auth
+                        .signInWithCustomToken(response)
+                        .then((response) => {
+                            console.log(response);
+                            this.accessToken = response.user.uid
+                           /*  response.user.getIdToken().then((token) => {
+                                this.accessToken = token;
+                            }); */
+                            this._authenticated = true;
+                            this._userService.user = {
+                                id: response.user.providerId,
+                                name: response.user.displayName,
+                                email: response.user.email,
+                            };
+            
+                            // Return true
+                            return of(true);
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        }));
                 })
             );
+        return from(this.auth
+            .signInWithCustomToken(this.accessToken)
+            .then((response) => {
+                this.accessToken = response.user.uid
+                this._authenticated = true;
+                this._userService.user = {
+                    id: response.user.providerId,
+                    name: response.user.displayName,
+                    email: response.user.email,
+                };
+                return of(true);
+            })
+            .catch((error) => {
+                console.log(error);
+            }));
     }
 
     /**
@@ -193,11 +211,6 @@ export class AuthService {
 
         // Check the access token availability
         if (!this.accessToken) {
-            return of(false);
-        }
-
-        // Check the access token expire date
-        if (AuthUtils.isTokenExpired(this.accessToken)) {
             return of(false);
         }
 
