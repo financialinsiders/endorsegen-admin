@@ -15,7 +15,7 @@ export class FirestoreService {
 
   constructor(private db: AngularFirestore) {
   }
-  getEndorsers(agentId) {
+  getEndorsers(agentId): any {
     return this.db.collection("endorsers").ref.where("agentId", "==", agentId);
   }
 }
