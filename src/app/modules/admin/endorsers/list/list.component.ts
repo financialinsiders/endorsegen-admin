@@ -220,15 +220,8 @@ export class ContactsListComponent implements OnInit, OnDestroy {
      * Create contact
      */
     createContact(): void {
-        // Create the contact
-        this._contactsService.createContact().subscribe((newContact) => {
-            // Go to the new endorser
-            this._router.navigate(['./', newContact.id], {
-                relativeTo: this._activatedRoute,
-            });
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
+        this._router.navigate(['./add'], {
+            relativeTo: this._activatedRoute,
         });
     }
 

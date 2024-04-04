@@ -5,6 +5,7 @@ import { ContactsService } from './endorsers.service';
 import { ContactsDetailsComponent } from './details/details.component';
 import { ContactsComponent } from './endorsers.component';
 import { ContactsListComponent } from './list/list.component';
+import { AddEndorserComponent } from './addEndorser/add-endorser.component';
 
 /**
  * Contact resolver
@@ -87,6 +88,10 @@ export default [
         },
         children : [
             {
+                path: 'add',
+                component: AddEndorserComponent
+            },
+            {
                 path     : '',
                 component: ContactsListComponent,
                 resolve  : {
@@ -105,6 +110,7 @@ export default [
                     },
                 ],
             },
+            
         ],
     },
 ] as Routes;
