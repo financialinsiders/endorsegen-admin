@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import {
     FormsModule,
     ReactiveFormsModule,
@@ -37,13 +37,18 @@ import { MatStepperModule } from '@angular/material/stepper';
 })
 export class AddEndorserComponent implements OnInit {
     verticalStepperForm: UntypedFormGroup;
+    @ViewChild('video') videoElementRef: ElementRef;
+    @ViewChild('recordedVideo') recordVideoElementRef: ElementRef;
+
+    stream: MediaStream;
+    recorder: MediaRecorder;
+    recording: boolean = false;
+    videoRecorderState: string;
     constructor(private _formBuilder: UntypedFormBuilder) {}
     ngOnInit(): void {
         this.verticalStepperForm = this._formBuilder.group({
             step1: this._formBuilder.group({
-                email: ['', [Validators.required, Validators.email]],
-                country: ['', Validators.required],
-                language: ['', Validators.required],
+                video: ['', [Validators.required]],
             }),
             step2: this._formBuilder.group({
                 firstName: ['', Validators.required],
@@ -60,5 +65,37 @@ export class AddEndorserComponent implements OnInit {
                 pushNotifications: ['everything', Validators.required],
             }),
         });
+    }
+    async startRecording() {
+        this.videoRecorderState = 'RECORDING_STARTED';
+        const mediaDevices = navigator.mediaDevices;
+        if (mediaDevices && mediaDevices.getUserMedia) {
+            try {
+                this.stream = await mediaDevices.getUserMedia({ video: true });
+                this.videoElementRef.nativeElement.srcObject = this.stream;
+                this.videoElementRef.nativeElement.play();
+                this.recorder = new MediaRecorder(this.stream);
+                this.recorder.ondataavailable = (event) => {
+                    const recordedVideo = URL.createObjectURL(event.data);
+                    this.recordVideoElementRef.nativeElement.src =
+                        recordedVideo;
+                    this.recording = false;
+                };
+                this.recorder.start();
+                this.recording = true;
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+            }
+        } else {
+            console.warn('getUserMedia not supported on your browser');
+        }
+    }
+
+    stopRecording() {
+        this.verticalStepperForm.get('step1').get('video').patchValue(this.recording);
+        this.videoRecorderState = 'RECORDING_COMPLETE'
+        if (this.recording) {
+            this.recorder.stop();
+        }
     }
 }
