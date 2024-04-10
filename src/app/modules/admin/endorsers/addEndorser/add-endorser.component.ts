@@ -15,6 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
+import { UploadAwsService } from '../../services/upload-aws.service';
 
 @Component({
     selector: 'add-endorser',
@@ -44,7 +45,7 @@ export class AddEndorserComponent implements OnInit {
     recorder: MediaRecorder;
     recording: boolean = false;
     videoRecorderState: string;
-    constructor(private _formBuilder: UntypedFormBuilder) {}
+    constructor(private _formBuilder: UntypedFormBuilder, private uploadAwsService: UploadAwsService) {}
     ngOnInit(): void {
         this.verticalStepperForm = this._formBuilder.group({
             step1: this._formBuilder.group({
@@ -93,6 +94,11 @@ export class AddEndorserComponent implements OnInit {
 
     stopRecording() {
         this.verticalStepperForm.get('step1').get('video').patchValue(this.recording);
+        this.recorder.ondataavailable = (event) => {
+            const recordedVideo = URL.createObjectURL(event.data);
+            this.uploadAwsService.fileUpload('491', 'videos', recordedVideo, '', '');
+        };
+
         this.videoRecorderState = 'RECORDING_COMPLETE'
         if (this.recording) {
             this.recorder.stop();
