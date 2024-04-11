@@ -41,35 +41,62 @@
                         [stepControl]="verticalStepperForm.get('step1')"
                         #verticalStepperStep1
                     >
-                        <ng-template matStepLabel
-                            >Record Video</ng-template
-                        >
+                        <ng-template matStepLabel>Record Video</ng-template>
                         <p class="my-6 font-medium">
                             Record the video to make it more authentic
                         </p>
                         <div class="flex">
                             <div>
-                                @if (videoRecorderState === 'RECORDING_STARTED') {
-                                    <video #video autoplay muted></video>
-                                    <div class="flex justify-center m-2">
-                                        <button mat-raised-button color="warn" (click)="stopRecording()">Stop Recording</button>
-                                    </div>
-                                } @else if(videoRecorderState === 'RECORDING_COMPLETE') {
-                                    <video #recordedVideo controls></video>
-                                    <div class="flex justify-center m-2">
-                                        <button mat-raised-button color="warn" (click)="startRecording()">Re-Take</button>
-                                    </div>
+                                @if (videoRecorderState === 'RECORDING_STARTED')
+                                {
+                                <app-video-teleprompter
+                                    #teleprompter
+                                    [script]="
+                                        'Welcome to BreezeAir, your future of indoor comfort. [Pause] Pioneering eco-friendly, AI-driven heating and cooling systems for a healthier, cozier home. [Pause] Join us in our mission of comfort and sustainability. [Pause] BreezeAir: Redefining Comfort.'
+                                    "
+                                ></app-video-teleprompter>
+                                <video #video autoplay muted></video>
+                                <div class="flex justify-center m-2">
+                                    <button
+                                        mat-raised-button
+                                        color="warn"
+                                        (click)="stopRecording()"
+                                    >
+                                        Stop Recording
+                                    </button>
+                                </div>
+                                } @else if(videoRecorderState ===
+                                'RECORDING_COMPLETE') {
+                                <video #recordedVideo controls></video>
+                                <div class="flex justify-center m-2">
+                                    <button
+                                        mat-raised-button
+                                        color="warn"
+                                        (click)="startRecording()"
+                                    >
+                                        Re-Take
+                                    </button>
+                                </div>
                                 } @else {
-                                    <button mat-raised-button color="warn" (click)="startRecording()">Start Recording</button>
+                                <button
+                                    mat-raised-button
+                                    color="warn"
+                                    (click)="startRecording()"
+                                >
+                                    Start Recording
+                                </button>
                                 }
-                              </div>
+                            </div>
                         </div>
                         <div class="flex justify-end">
                             <button
                                 class="px-8"
                                 mat-flat-button
                                 [color]="'primary'"
-                                [disabled]="!videoRecorderState || videoRecorderState !== 'RECORDING_COMPLETE'"
+                                [disabled]="
+                                    !videoRecorderState ||
+                                    videoRecorderState !== 'RECORDING_COMPLETE'
+                                "
                                 type="button"
                                 matStepperNext
                             >

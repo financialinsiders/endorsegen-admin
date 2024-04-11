@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation,
+} from '@angular/core';
 import {
     FormsModule,
     ReactiveFormsModule,
@@ -16,6 +22,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
 import { UploadAwsService } from '../../services/upload-aws.service';
+import { VideoTeleprompterComponent } from 'app/layout/common/video-teleprompter/video-teleprompter.component';
 
 @Component({
     selector: 'add-endorser',
@@ -34,18 +41,23 @@ import { UploadAwsService } from '../../services/upload-aws.service';
         MatButtonModule,
         MatCheckboxModule,
         MatRadioModule,
+        VideoTeleprompterComponent,
     ],
 })
 export class AddEndorserComponent implements OnInit {
     verticalStepperForm: UntypedFormGroup;
     @ViewChild('video') videoElementRef: ElementRef;
     @ViewChild('recordedVideo') recordVideoElementRef: ElementRef;
+    @ViewChild('teleprompter') teleprompter: VideoTeleprompterComponent;
 
     stream: MediaStream;
     recorder: MediaRecorder;
     recording: boolean = false;
     videoRecorderState: string;
-    constructor(private _formBuilder: UntypedFormBuilder, private uploadAwsService: UploadAwsService) {}
+    constructor(
+        private _formBuilder: UntypedFormBuilder,
+        private uploadAwsService: UploadAwsService
+    ) {}
     ngOnInit(): void {
         this.verticalStepperForm = this._formBuilder.group({
             step1: this._formBuilder.group({
@@ -87,19 +99,30 @@ export class AddEndorserComponent implements OnInit {
             } catch (error) {
                 console.error('Error accessing camera:', error);
             }
+            this.teleprompter.playOrPauseScript();
         } else {
             console.warn('getUserMedia not supported on your browser');
         }
     }
 
     stopRecording() {
-        this.verticalStepperForm.get('step1').get('video').patchValue(this.recording);
+        this.teleprompter.stopScrollScript();
+        this.verticalStepperForm
+            .get('step1')
+            .get('video')
+            .patchValue(this.recording);
         this.recorder.ondataavailable = (event) => {
             const recordedVideo = URL.createObjectURL(event.data);
-            this.uploadAwsService.fileUpload('491', 'videos', recordedVideo, '', '');
+            this.uploadAwsService.fileUpload(
+                '491',
+                'videos',
+                recordedVideo,
+                '',
+                ''
+            );
         };
 
-        this.videoRecorderState = 'RECORDING_COMPLETE'
+        this.videoRecorderState = 'RECORDING_COMPLETE';
         if (this.recording) {
             this.recorder.stop();
         }

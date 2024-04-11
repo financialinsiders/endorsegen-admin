@@ -1,0 +1,67 @@
+<div class="teleprompter-container">
+  <textarea
+    #teleprompterContainer
+    class="teleprompter-text"
+    [(ngModel)]="script"
+    disabled="true"
+  ></textarea>
+  <pre>{{ scrollSpeed }}</pre>
+  <!-- <div #teleprompterContainer class="teleprompter-text">
+    {{ script }}
+  </div> -->
+  <div class="teleprompter-control">
+    <div
+      class="teleprompter-control__speed-control-container"
+      (click)="changeSpeed()"
+    >
+      <img src="/assets/images/teleprompter/clock.svg" height="22px" />
+      <div
+        class="teleprompter-control__speed-control-container__controller"
+        (mouseout)="closeSpeedController()"
+        #scc
+      >
+        <img src="/assets/images/teleprompter/snail.svg" class="speed-rep" />
+        <input
+          type="range"
+          class="range-field"
+          [(ngModel)]="scrollSpeed"
+          min="1"
+          max="5"
+        />
+        <img src="/assets/images/teleprompter/deer.svg" class="speed-rep" />
+      </div>
+    </div>
+    <div class="teleprompter-control__play-control-container">
+      <div
+        clsss="teleprompter-control__play-control-container__action"
+        (click)="backwardScrollScript()"
+      >
+        <img src="/assets/images/teleprompter/backward.svg" height="20px" />
+      </div>
+      <div
+        clsss="teleprompter-control__play-control-container__action"
+        (click)="playOrPauseScript()"
+      >
+        <img
+          *ngIf="!isPlayingScript"
+          src="/assets/images/teleprompter/play.svg"
+          height="20px"
+        />
+        <img
+          *ngIf="isPlayingScript"
+          src="/assets/images/teleprompter/pause.svg"
+          height="20px"
+        />
+      </div>
+      <div
+        clsss="teleprompter-control__play-control-container__action"
+        (click)="forwardScrollScript()"
+      >
+        <img src="/assets/images/teleprompter/forward.svg" height="20px" />
+      </div>
+    </div>
+    <!-- <span>slow</span>
+    <input type="range" [(ngModel)]="scrollSpeed" />
+    <span>Fast</span> -->
+  </div>
+</div>
