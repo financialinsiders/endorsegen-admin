@@ -23,15 +23,19 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
 import { UploadAwsService } from '../../services/upload-aws.service';
 import { VideoTeleprompterComponent } from 'app/layout/common/video-teleprompter/video-teleprompter.component';
+import { Observable, map, take, timer } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'add-endorser',
     templateUrl: './add-endorser.component.html',
+    styleUrls: ['./add-endorser.component.scss'],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [
         MatIconModule,
         FormsModule,
+        CommonModule,
         ReactiveFormsModule,
         MatStepperModule,
         MatFormFieldModule,
@@ -54,6 +58,7 @@ export class AddEndorserComponent implements OnInit {
     recorder: MediaRecorder;
     recording: boolean = false;
     videoRecorderState: string;
+    countdown$: Observable<number>;
     constructor(
         private _formBuilder: UntypedFormBuilder,
         private uploadAwsService: UploadAwsService
@@ -79,8 +84,8 @@ export class AddEndorserComponent implements OnInit {
             }),
         });
     }
-    async startRecording() {
-        this.videoRecorderState = 'RECORDING_STARTED';
+    async readyRecording() {
+        this.videoRecorderState = 'READY_FOR_RECORDING';
         const mediaDevices = navigator.mediaDevices;
         if (mediaDevices && mediaDevices.getUserMedia) {
             try {
@@ -90,21 +95,34 @@ export class AddEndorserComponent implements OnInit {
                 this.recorder = new MediaRecorder(this.stream);
                 this.recorder.ondataavailable = (event) => {
                     const recordedVideo = URL.createObjectURL(event.data);
+                    console.log(recordedVideo);
                     this.recordVideoElementRef.nativeElement.src =
-                        recordedVideo;
+                        recordedVideo['Location'];
+                        console.log(recordedVideo['Location']);
                     this.recording = false;
                 };
-                this.recorder.start();
-                this.recording = true;
             } catch (error) {
                 console.error('Error accessing camera:', error);
             }
-            this.teleprompter.playOrPauseScript();
         } else {
             console.warn('getUserMedia not supported on your browser');
         }
     }
-
+    startRecording() {
+        this.countdown$ = timer(0, 1000).pipe(
+            map((i) => {
+                let count = 3 - i;
+                if (count === 0) {
+                    this.videoRecorderState = 'RECORDING_STARTED';
+                    this.recorder.start();
+                    this.recording = true;
+                    this.teleprompter.playOrPauseScript();
+                }
+                return count;
+            }),
+            take(4)
+        );
+    }
     stopRecording() {
         this.teleprompter.stopScrollScript();
         this.verticalStepperForm

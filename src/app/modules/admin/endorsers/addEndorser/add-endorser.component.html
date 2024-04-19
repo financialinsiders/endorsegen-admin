@@ -47,8 +47,10 @@
                         </p>
                         <div class="flex">
                             <div>
-                                @if (videoRecorderState === 'RECORDING_STARTED')
+                                @if(videoRecorderState === 'RECORDING_STARTED'
+                                || videoRecorderState === 'READY_FOR_RECORDING')
                                 {
+                                
                                 <app-video-teleprompter
                                     #teleprompter
                                     [script]="
@@ -56,6 +58,12 @@
                                     "
                                 ></app-video-teleprompter>
                                 <video #video autoplay muted></video>
+                                <div *ngIf="countdown$ | async as count">
+                                   <h1 class="center-align-h1"> {{ count }} </h1>
+                                </div>
+                                } @if (videoRecorderState ===
+                                'RECORDING_STARTED') {
+
                                 <div class="flex justify-center m-2">
                                     <button
                                         mat-raised-button
@@ -65,25 +73,37 @@
                                         Stop Recording
                                     </button>
                                 </div>
-                                } @else if(videoRecorderState ===
+                                } @else if (videoRecorderState ===
                                 'RECORDING_COMPLETE') {
                                 <video #recordedVideo controls></video>
                                 <div class="flex justify-center m-2">
                                     <button
                                         mat-raised-button
                                         color="warn"
-                                        (click)="startRecording()"
+                                        (click)="readyRecording()"
                                     >
                                         Re-Take
                                     </button>
                                 </div>
+                                } @else if (videoRecorderState ===
+                                'READY_FOR_RECORDING') {
+                                <div class="flex justify-center m-2">
+                                    <button
+                                        mat-raised-button
+                                        color="warn"
+                                        (click)="startRecording()"
+                                    >
+                                        Start Recording
+                                    </button>
+                                </div>
+
                                 } @else {
                                 <button
                                     mat-raised-button
                                     color="warn"
-                                    (click)="startRecording()"
+                                    (click)="readyRecording()"
                                 >
-                                    Start Recording
+                                    Read to Record
                                 </button>
                                 }
                             </div>
