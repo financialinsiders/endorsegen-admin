@@ -1,0 +1,56 @@
+<div>
+    @if(videoRecorderState === 'RECORDING_STARTED'
+    || videoRecorderState === 'READY_FOR_RECORDING')
+    {
+    
+    
+    <video #video autoplay muted></video>
+    <div *ngIf="countdown$ | async as count">
+       <h1 class="center-align-h1"> {{ count }} </h1>
+    </div>
+    } @if (videoRecorderState ===
+    'RECORDING_STARTED') {
+
+    <div class="flex justify-center m-2">
+        <button
+            mat-raised-button
+            color="warn"
+            (click)="stopRecording()"
+        >
+            Stop Recording
+        </button>
+    </div>
+    } @else if (videoRecorderState ===
+    'RECORDING_COMPLETE') {
+    <video #recordedVideo controls></video>
+    <div class="flex justify-center m-2">
+        <button
+            mat-raised-button
+            color="warn"
+            (click)="readyRecording()"
+        >
+            Re-Take
+        </button>
+    </div>
+    } @else if (videoRecorderState ===
+    'READY_FOR_RECORDING') {
+    <div class="flex justify-center m-2">
+        <button
+            mat-raised-button
+            color="warn"
+            (click)="startRecording()"
+        >
+            Start Recording
+        </button>
+    </div>
+
+    } @else {
+    <button
+        mat-raised-button
+        color="warn"
+        (click)="readyRecording()"
+    >
+        Ready to Record
+    </button>
+    }
+</div>

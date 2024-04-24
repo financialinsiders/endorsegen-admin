@@ -48,64 +48,14 @@
                         <div class="flex">
                             <div>
                                 @if(videoRecorderState === 'RECORDING_STARTED'
-                                || videoRecorderState === 'READY_FOR_RECORDING')
-                                {
-                                
-                                <app-video-teleprompter
+    || videoRecorderState === 'READY_FOR_RECORDING') { <app-video-teleprompter
                                     #teleprompter
                                     [script]="
                                         'Welcome to BreezeAir, your future of indoor comfort. [Pause] Pioneering eco-friendly, AI-driven heating and cooling systems for a healthier, cozier home. [Pause] Join us in our mission of comfort and sustainability. [Pause] BreezeAir: Redefining Comfort.'
                                     "
-                                ></app-video-teleprompter>
-                                <video #video autoplay muted></video>
-                                <div *ngIf="countdown$ | async as count">
-                                   <h1 class="center-align-h1"> {{ count }} </h1>
-                                </div>
-                                } @if (videoRecorderState ===
-                                'RECORDING_STARTED') {
-
-                                <div class="flex justify-center m-2">
-                                    <button
-                                        mat-raised-button
-                                        color="warn"
-                                        (click)="stopRecording()"
-                                    >
-                                        Stop Recording
-                                    </button>
-                                </div>
-                                } @else if (videoRecorderState ===
-                                'RECORDING_COMPLETE') {
-                                <video #recordedVideo controls></video>
-                                <div class="flex justify-center m-2">
-                                    <button
-                                        mat-raised-button
-                                        color="warn"
-                                        (click)="readyRecording()"
-                                    >
-                                        Re-Take
-                                    </button>
-                                </div>
-                                } @else if (videoRecorderState ===
-                                'READY_FOR_RECORDING') {
-                                <div class="flex justify-center m-2">
-                                    <button
-                                        mat-raised-button
-                                        color="warn"
-                                        (click)="startRecording()"
-                                    >
-                                        Start Recording
-                                    </button>
-                                </div>
-
-                                } @else {
-                                <button
-                                    mat-raised-button
-                                    color="warn"
-                                    (click)="readyRecording()"
-                                >
-                                    Read to Record
-                                </button>
+                                ></app-video-teleprompter> 
                                 }
+                               <app-video-recorder (recordingStateChanged)="onRecordedVideoStateChange($event)"></app-video-recorder>
                             </div>
                         </div>
                         <div class="flex justify-end">

@@ -22,7 +22,9 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
 import { UploadAwsService } from '../../services/upload-aws.service';
+import { VideoRecorderComponent } from 'app/layout/common/video-recorder/video-recorder.component';
 import { VideoTeleprompterComponent } from 'app/layout/common/video-teleprompter/video-teleprompter.component';
+
 import { Observable, map, take, timer } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
@@ -46,6 +48,7 @@ import { CommonModule } from '@angular/common';
         MatCheckboxModule,
         MatRadioModule,
         VideoTeleprompterComponent,
+        VideoRecorderComponent
     ],
 })
 export class AddEndorserComponent implements OnInit {
@@ -53,15 +56,11 @@ export class AddEndorserComponent implements OnInit {
     @ViewChild('video') videoElementRef: ElementRef;
     @ViewChild('recordedVideo') recordVideoElementRef: ElementRef;
     @ViewChild('teleprompter') teleprompter: VideoTeleprompterComponent;
-
-    stream: MediaStream;
-    recorder: MediaRecorder;
-    recording: boolean = false;
+    @ViewChild('videorecorder') videoRecorder: VideoRecorderComponent;
     videoRecorderState: string;
-    countdown$: Observable<number>;
+    recording: boolean = false;
     constructor(
         private _formBuilder: UntypedFormBuilder,
-        private uploadAwsService: UploadAwsService
     ) {}
     ngOnInit(): void {
         this.verticalStepperForm = this._formBuilder.group({
@@ -84,7 +83,32 @@ export class AddEndorserComponent implements OnInit {
             }),
         });
     }
-    async readyRecording() {
+
+    onRecordedVideoStateChange(newState: string) {
+        this.videoRecorderState = newState;
+        console.log('Recording state changed to: ', newState);
+        switch(newState) {
+            case 'RECORDING_STARTED':
+                this.teleprompter.playOrPauseScript();
+                this.recording = true;
+            break;
+            case 'RECORDING_STOPPED':
+                
+                this.teleprompter.stopScrollScript();
+                break;
+                
+            break;   
+            case 'RECORDING_COMPLETE':
+                this.recording = false;
+                this.verticalStepperForm
+                .get('step1')
+                .get('video')
+                .patchValue(this.recording);
+            break;
+        }
+    }
+
+    /*async readyRecording() {
         this.videoRecorderState = 'READY_FOR_RECORDING';
         const mediaDevices = navigator.mediaDevices;
         if (mediaDevices && mediaDevices.getUserMedia) {
@@ -107,8 +131,8 @@ export class AddEndorserComponent implements OnInit {
         } else {
             console.warn('getUserMedia not supported on your browser');
         }
-    }
-    startRecording() {
+    }*/
+    /*startRecording() {
         this.countdown$ = timer(0, 1000).pipe(
             map((i) => {
                 let count = 3 - i;
@@ -122,15 +146,17 @@ export class AddEndorserComponent implements OnInit {
             }),
             take(4)
         );
-    }
+    } */
+    /*
     stopRecording() {
         this.teleprompter.stopScrollScript();
         this.verticalStepperForm
             .get('step1')
             .get('video')
             .patchValue(this.recording);
-        this.recorder.ondataavailable = (event) => {
+            this.recorder.ondataavailable = (event) => {
             const recordedVideo = URL.createObjectURL(event.data);
+           
             this.uploadAwsService.fileUpload(
                 '491',
                 'videos',
@@ -145,4 +171,5 @@ export class AddEndorserComponent implements OnInit {
             this.recorder.stop();
         }
     }
+    */
 }
