@@ -1,20 +1,16 @@
 import {
   Component,
   ElementRef,
-  OnInit,
   ViewChild,
-  ViewEncapsulation,
   EventEmitter,
   Output,
   Input,
 } from '@angular/core';
 import { UploadAwsService } from '../../../modules/admin/services/upload-aws.service';
-import gifshots from 'gifshot';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable, map, take, timer } from 'rxjs';
-
 
 @Component({
   selector: 'app-video-recorder',
@@ -92,14 +88,15 @@ stopRecording() {
       this.videoRecorderState = 'RECORDING_STOPPED';
       this.recorder.ondataavailable = (event) => {
       const recordedVideo = URL.createObjectURL(event.data);
-     
-      this.uploadAwsService.fileUpload(
-          '491',
-          'videos',
-          recordedVideo,
-          '',
-          ''
-      );
+      this.recordVideoElementRef.nativeElement.src =
+                        recordedVideo;
+            this.uploadAwsService.fileUpload(
+                '491',
+                'videos',
+                recordedVideo,
+                'recordedVideo.mp4',
+                'video/mp4'
+            );
   };
 
   this.videoRecorderState = 'RECORDING_COMPLETE';
