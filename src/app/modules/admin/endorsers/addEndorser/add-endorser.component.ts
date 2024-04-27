@@ -48,7 +48,7 @@ import { CommonModule } from '@angular/common';
         MatCheckboxModule,
         MatRadioModule,
         VideoTeleprompterComponent,
-        VideoRecorderComponent
+        VideoRecorderComponent,
     ],
 })
 export class AddEndorserComponent implements OnInit {
@@ -59,21 +59,25 @@ export class AddEndorserComponent implements OnInit {
     @ViewChild('videorecorder') videoRecorder: VideoRecorderComponent;
     videoRecorderState: string;
     recording: boolean = false;
-    constructor(
-        private _formBuilder: UntypedFormBuilder,
-    ) {}
+    points = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+    constructor(private _formBuilder: UntypedFormBuilder) {}
     ngOnInit(): void {
         this.verticalStepperForm = this._formBuilder.group({
             step1: this._formBuilder.group({
-                video: ['', [Validators.required]],
-            }),
-            step2: this._formBuilder.group({
                 firstName: ['', Validators.required],
                 lastName: ['', Validators.required],
-                userName: ['', Validators.required],
-                about: [''],
+                email: ['', Validators.required],
+                phoneNumber: ['', Validators.required],
+            }),
+            step2: this._formBuilder.group({
+                videoPoint: ['', Validators.required],
+                leadPoint: ['', Validators.required],
             }),
             step3: this._formBuilder.group({
+                video: ['', [Validators.required]],
+            }),
+
+            step4: this._formBuilder.group({
                 byEmail: this._formBuilder.group({
                     companyNews: [true],
                     featuredProducts: [false],
@@ -87,89 +91,22 @@ export class AddEndorserComponent implements OnInit {
     onRecordedVideoStateChange(newState: string) {
         this.videoRecorderState = newState;
         console.log('Recording state changed to: ', newState);
-        switch(newState) {
+        switch (newState) {
             case 'RECORDING_STARTED':
                 this.teleprompter.playOrPauseScript();
                 this.recording = true;
-            break;
+                break;
             case 'RECORDING_STOPPED':
-                
                 this.teleprompter.stopScrollScript();
                 break;
-                
-            break;   
+
             case 'RECORDING_COMPLETE':
                 this.recording = false;
                 this.verticalStepperForm
-                .get('step1')
-                .get('video')
-                .patchValue(this.recording);
-            break;
+                    .get('step1')
+                    .get('video')
+                    .patchValue(this.recording);
+                break;
         }
     }
-
-    /*async readyRecording() {
-        this.videoRecorderState = 'READY_FOR_RECORDING';
-        const mediaDevices = navigator.mediaDevices;
-        if (mediaDevices && mediaDevices.getUserMedia) {
-            try {
-                this.stream = await mediaDevices.getUserMedia({ video: true });
-                this.videoElementRef.nativeElement.srcObject = this.stream;
-                this.videoElementRef.nativeElement.play();
-                this.recorder = new MediaRecorder(this.stream);
-                this.recorder.ondataavailable = (event) => {
-                    const recordedVideo = URL.createObjectURL(event.data);
-                    console.log(recordedVideo);
-                    this.recordVideoElementRef.nativeElement.src =
-                        recordedVideo['Location'];
-                        console.log(recordedVideo['Location']);
-                    this.recording = false;
-                };
-            } catch (error) {
-                console.error('Error accessing camera:', error);
-            }
-        } else {
-            console.warn('getUserMedia not supported on your browser');
-        }
-    }*/
-    /*startRecording() {
-        this.countdown$ = timer(0, 1000).pipe(
-            map((i) => {
-                let count = 3 - i;
-                if (count === 0) {
-                    this.videoRecorderState = 'RECORDING_STARTED';
-                    this.recorder.start();
-                    this.recording = true;
-                    this.teleprompter.playOrPauseScript();
-                }
-                return count;
-            }),
-            take(4)
-        );
-    } */
-    /*
-    stopRecording() {
-        this.teleprompter.stopScrollScript();
-        this.verticalStepperForm
-            .get('step1')
-            .get('video')
-            .patchValue(this.recording);
-            this.recorder.ondataavailable = (event) => {
-            const recordedVideo = URL.createObjectURL(event.data);
-           
-            this.uploadAwsService.fileUpload(
-                '491',
-                'videos',
-                recordedVideo,
-                '',
-                ''
-            );
-        };
-
-        this.videoRecorderState = 'RECORDING_COMPLETE';
-        if (this.recording) {
-            this.recorder.stop();
-        }
-    }
-    */
 }

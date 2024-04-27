@@ -41,31 +41,90 @@
                         [stepControl]="verticalStepperForm.get('step1')"
                         #verticalStepperStep1
                     >
-                        <ng-template matStepLabel>Record Video</ng-template>
+                        <ng-template matStepLabel>Endorser Details</ng-template>
                         <p class="my-6 font-medium">
-                            Record the video to make it more authentic
+                            Please enter the details of your new endorser
                         </p>
-                        <div class="flex">
-                            <div>
-                                @if(videoRecorderState === 'RECORDING_STARTED'
-    || videoRecorderState === 'READY_FOR_RECORDING') { <app-video-teleprompter
-                                    #teleprompter
-                                    [script]="
-                                        'Welcome to BreezeAir, your future of indoor comfort. [Pause] Pioneering eco-friendly, AI-driven heating and cooling systems for a healthier, cozier home. [Pause] Join us in our mission of comfort and sustainability. [Pause] BreezeAir: Redefining Comfort.'
-                                    "
-                                ></app-video-teleprompter> 
-                                }
-                               <app-video-recorder (recordingStateChanged)="onRecordedVideoStateChange($event)"></app-video-recorder>
+                        <div class="flex flex-col gt-xs:flex-row">
+                            <div class="flex">
+                                <mat-form-field
+                                    class="flex-auto gt-xs:pr-3 mr-3"
+                                >
+                                    <input
+                                        matInput
+                                        [formControlName]="'firstName'"
+                                        [placeholder]="'First name'"
+                                        required
+                                    />
+                                    <mat-icon
+                                        class="icon-size-5"
+                                        matPrefix
+                                        [svgIcon]="
+                                            'heroicons_solid:user-circle'
+                                        "
+                                    ></mat-icon>
+                                </mat-form-field>
+                                <mat-form-field class="flex-auto gt-xs:pl-3">
+                                    <input
+                                        matInput
+                                        [formControlName]="'lastName'"
+                                        [placeholder]="'Last name'"
+                                        required
+                                    />
+                                    <mat-icon
+                                        class="icon-size-5"
+                                        matPrefix
+                                        [svgIcon]="
+                                            'heroicons_solid:user-circle'
+                                        "
+                                    ></mat-icon>
+                                </mat-form-field>
                             </div>
+
+                            <mat-form-field class="flex-auto gt-xs:pl-3">
+                                <input
+                                    matInput
+                                    [formControlName]="'email'"
+                                    [placeholder]="'Email'"
+                                    required
+                                />
+                                <mat-icon
+                                    class="icon-size-5"
+                                    matPrefix
+                                    [svgIcon]="'heroicons_solid:envelope'"
+                                ></mat-icon>
+                            </mat-form-field>
+                            <mat-form-field class="flex-auto gt-xs:pl-3">
+                                <input
+                                    matInput
+                                    [formControlName]="'phoneNumber'"
+                                    [placeholder]="'Phone Number'"
+                                    required
+                                />
+                                <mat-icon
+                                    class="icon-size-5"
+                                    matPrefix
+                                    [svgIcon]="'heroicons_solid:phone'"
+                                ></mat-icon>
+                            </mat-form-field>
                         </div>
                         <div class="flex justify-end">
+                            <button
+                                class="px-8 mr-2"
+                                mat-flat-button
+                                [color]="'accent'"
+                                type="button"
+                                matStepperPrevious
+                            >
+                                Back
+                            </button>
                             <button
                                 class="px-8"
                                 mat-flat-button
                                 [color]="'primary'"
                                 [disabled]="
-                                    !videoRecorderState ||
-                                    videoRecorderState !== 'RECORDING_COMPLETE'
+                                    verticalStepperStep1.stepControl.pristine ||
+                                    verticalStepperStep1.stepControl.invalid
                                 "
                                 type="button"
                                 matStepperNext
@@ -74,71 +133,45 @@
                             </button>
                         </div>
                     </mat-step>
-
                     <mat-step
                         [formGroupName]="'step2'"
                         [stepControl]="verticalStepperForm.get('step2')"
                         #verticalStepperStep2
                     >
-                        <ng-template matStepLabel>Profile</ng-template>
-                        <p class="my-6 font-medium">
-                            People here will get to know you with this
-                            information
-                        </p>
+                        <ng-template matStepLabel>Endorser Points</ng-template>
+                        <p class="my-6 font-medium">Assign point values</p>
                         <div class="flex flex-col gt-xs:flex-row">
-                            <mat-form-field class="flex-auto gt-xs:pr-3">
-                                <input
-                                    matInput
-                                    [formControlName]="'firstName'"
-                                    [placeholder]="'First name'"
+                            <mat-form-field>
+                                <mat-label>
+                                    Please select the amount of points for each
+                                    video view</mat-label
+                                >
+                                <mat-select
+                                    [formControlName]="'videoPoint'"
                                     required
-                                />
-                                <mat-icon
-                                    class="icon-size-5"
-                                    matPrefix
-                                    [svgIcon]="'heroicons_solid:user-circle'"
-                                ></mat-icon>
+                                >
+                                    @for (point of points; track point) {
+                                    <mat-option [value]="point">{{
+                                        point
+                                    }}</mat-option>
+                                    }
+                                </mat-select>
                             </mat-form-field>
-                            <mat-form-field class="flex-auto gt-xs:pl-3">
-                                <input
-                                    matInput
-                                    [formControlName]="'lastName'"
-                                    [placeholder]="'Last name'"
+                            <mat-form-field>
+                                <mat-label>
+                                    Please select the amount of points for when
+                                    a lead is generated by your endorser
+                                </mat-label>
+                                <mat-select
+                                    [formControlName]="'leadPoint'"
                                     required
-                                />
-                                <mat-icon
-                                    class="icon-size-5"
-                                    matPrefix
-                                    [svgIcon]="'heroicons_solid:user-circle'"
-                                ></mat-icon>
-                            </mat-form-field>
-                        </div>
-                        <div class="flex">
-                            <mat-form-field class="flex-auto">
-                                <input
-                                    matInput
-                                    [formControlName]="'userName'"
-                                    [placeholder]="'Username'"
-                                    required
-                                />
-                                <span matPrefix>www.example.com/</span>
-                            </mat-form-field>
-                        </div>
-                        <div class="flex">
-                            <mat-form-field class="flex-auto">
-                                <textarea
-                                    matInput
-                                    [formControlName]="'about'"
-                                    [placeholder]="'About'"
-                                    [rows]="3"
-                                ></textarea>
-                                <mat-icon
-                                    class="icon-size-5"
-                                    matPrefix
-                                    [svgIcon]="
-                                        'heroicons_solid:bars-3-bottom-left'
-                                    "
-                                ></mat-icon>
+                                >
+                                    @for (point of points; track point) {
+                                    <mat-option [value]="point">{{
+                                        point
+                                    }}</mat-option>
+                                    }
+                                </mat-select>
                             </mat-form-field>
                         </div>
                         <div class="flex justify-end">
@@ -166,10 +199,54 @@
                             </button>
                         </div>
                     </mat-step>
-
                     <mat-step
                         [formGroupName]="'step3'"
                         [stepControl]="verticalStepperForm.get('step3')"
+                        #verticalStepperStep3
+                    >
+                        <ng-template matStepLabel>Record Video</ng-template>
+                        <p class="my-6 font-medium">
+                            Record the video to make it more authentic
+                        </p>
+                        <div class="flex">
+                            <div>
+                                @if(videoRecorderState === 'RECORDING_STARTED'
+                                || videoRecorderState === 'READY_FOR_RECORDING')
+                                {
+                                <app-video-teleprompter
+                                    #teleprompter
+                                    [script]="
+                                        'Welcome to BreezeAir, your future of indoor comfort. [Pause] Pioneering eco-friendly, AI-driven heating and cooling systems for a healthier, cozier home. [Pause] Join us in our mission of comfort and sustainability. [Pause] BreezeAir: Redefining Comfort.'
+                                    "
+                                ></app-video-teleprompter>
+                                }
+                                <app-video-recorder
+                                    (recordingStateChanged)="
+                                        onRecordedVideoStateChange($event)
+                                    "
+                                ></app-video-recorder>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button
+                                class="px-8"
+                                mat-flat-button
+                                [color]="'primary'"
+                                [disabled]="
+                                    !videoRecorderState ||
+                                    videoRecorderState !== 'RECORDING_COMPLETE'
+                                "
+                                type="button"
+                                matStepperNext
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </mat-step>
+
+                    <mat-step
+                        [formGroupName]="'step4'"
+                        [stepControl]="verticalStepperForm.get('step4')"
                     >
                         <ng-template matStepLabel>Notifications</ng-template>
                         <p class="my-6 font-medium">
