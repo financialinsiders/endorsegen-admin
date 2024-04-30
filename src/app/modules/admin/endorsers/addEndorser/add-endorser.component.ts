@@ -25,9 +25,11 @@ import { UploadAwsService } from '../../services/upload-aws.service';
 import { VideoRecorderComponent } from 'app/layout/common/video-recorder/video-recorder.component';
 import { VideoTeleprompterComponent } from 'app/layout/common/video-teleprompter/video-teleprompter.component';
 
-import { Observable, map, take, timer } from 'rxjs';
 import { CommonModule } from '@angular/common';
-
+interface Entry {
+    label: string;
+    value: string;
+}
 @Component({
     selector: 'add-endorser',
     templateUrl: './add-endorser.component.html',
@@ -60,6 +62,24 @@ export class AddEndorserComponent implements OnInit {
     videoRecorderState: string;
     recording: boolean = false;
     points = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+    surveyList: Entry[] = [
+        {
+            label: 'Window service',
+            value: 'window',
+        },
+        {
+            label: 'Door service',
+            value: 'door',
+        },
+        {
+            label: 'Roof service',
+            value: 'roof',
+        },
+        {
+            label: 'Other service',
+            value: 'other',
+        },
+    ];
     constructor(private _formBuilder: UntypedFormBuilder) {}
     ngOnInit(): void {
         this.verticalStepperForm = this._formBuilder.group({
@@ -74,10 +94,13 @@ export class AddEndorserComponent implements OnInit {
                 leadPoint: ['', Validators.required],
             }),
             step3: this._formBuilder.group({
+                surveyOption: ['', Validators.required],
+            }),
+            step4: this._formBuilder.group({
                 video: ['', [Validators.required]],
             }),
 
-            step4: this._formBuilder.group({
+            step5: this._formBuilder.group({
                 byEmail: this._formBuilder.group({
                     companyNews: [true],
                     featuredProducts: [false],
@@ -90,7 +113,6 @@ export class AddEndorserComponent implements OnInit {
 
     onRecordedVideoStateChange(newState: string) {
         this.videoRecorderState = newState;
-        console.log('Recording state changed to: ', newState);
         switch (newState) {
             case 'RECORDING_STARTED':
                 this.teleprompter.playOrPauseScript();

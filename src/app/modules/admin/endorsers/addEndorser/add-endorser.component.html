@@ -204,6 +204,59 @@
                         [stepControl]="verticalStepperForm.get('step3')"
                         #verticalStepperStep3
                     >
+                        <ng-template matStepLabel
+                            >Customer experience survey</ng-template
+                        >
+                        <div class="flex flex-col gt-xs:flex-row">
+                            <mat-form-field>
+                                <mat-label>
+                                    Choose your Customer Experience Survey from
+                                    your library of Surveys.</mat-label
+                                >
+
+                                <mat-select
+                                    [formControlName]="'surveyOption'"
+                                    required
+                                >
+                                    @for (survey of surveyList; track
+                                    survey.value) {
+                                    <mat-option [value]="survey.value">
+                                        {{ survey.label }}</mat-option
+                                    >
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex justify-end">
+                            <button
+                                class="px-8 mr-2"
+                                mat-flat-button
+                                [color]="'accent'"
+                                type="button"
+                                matStepperPrevious
+                            >
+                                Back
+                            </button>
+                            <button
+                                class="px-8"
+                                mat-flat-button
+                                [color]="'primary'"
+                                [disabled]="
+                                    verticalStepperStep3.stepControl.pristine ||
+                                    verticalStepperStep3.stepControl.invalid
+                                "
+                                type="button"
+                                matStepperNext
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </mat-step>
+                    <mat-step
+                        [formGroupName]="'step4'"
+                        [stepControl]="verticalStepperForm.get('step4')"
+                        #verticalStepperStep4
+                    >
                         <ng-template matStepLabel>Record Video</ng-template>
                         <p class="my-6 font-medium">
                             Record the video to make it more authentic
@@ -245,8 +298,8 @@
                     </mat-step>
 
                     <mat-step
-                        [formGroupName]="'step4'"
-                        [stepControl]="verticalStepperForm.get('step4')"
+                        [formGroupName]="'step5'"
+                        [stepControl]="verticalStepperForm.get('step5')"
                     >
                         <ng-template matStepLabel>Notifications</ng-template>
                         <p class="my-6 font-medium">

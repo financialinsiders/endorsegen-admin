@@ -123,7 +123,6 @@ export class AuthService {
                     return from(this.auth
                         .signInWithCustomToken(response)
                         .then((response) => {
-                            console.log(response);
                             this.accessToken = response.user.uid
                            /*  response.user.getIdToken().then((token) => {
                                 this.accessToken = token;
