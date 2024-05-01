@@ -109,7 +109,6 @@ export class AuthService {
      */
     signInUsingToken(): Observable<any> {
         // Sign in using the token
-        debugger
         return this._httpClient
             .post('v1/firebase/getCustomToken', {
                 accessToken: this.accessToken,

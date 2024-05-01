@@ -257,6 +257,84 @@
                         [stepControl]="verticalStepperForm.get('step4')"
                         #verticalStepperStep4
                     >
+                        <ng-template matStepLabel>Endorser Email</ng-template>
+                        <p class="my-6 font-medium">
+                            This is a critical step on getting your customers to
+                            endorse your services, You can use our AI writing
+                            assistant to help you draft a email and video script
+                            to make it personal.
+                        </p>
+                        <p>
+                            We have provided you a template based on the
+                            information you provided us in your onboarding
+                            process, but if you would like our AI assistant to
+                            re-write the template type your prompt below.
+                        </p>
+                        <div class="flex flex-col gt-xs:flex-row">
+                            <mat-form-field>
+                                <mat-label>Action</mat-label>
+                                <input
+                                    matInput
+                                    [formControlName]="'emailPrompt'"
+                                    #action
+                                    required
+                                />
+                                <button
+                                    (click)="generateEmail()"
+                                    mat-flat-button
+                                    color="primary"
+                                >
+                                    Generate
+                                </button>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Subject</mat-label>
+                                <input
+                                    matInput
+                                    [formControlName]="'emailSubject'"
+                                    required
+                                />
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Body</mat-label>
+                                <textarea
+                                    rows="10"
+                                    matInput
+                                    [formControlName]="'emailBody'"
+                                    required
+                                ></textarea>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex justify-end">
+                            <button
+                                class="px-8 mr-2"
+                                mat-flat-button
+                                [color]="'accent'"
+                                type="button"
+                                matStepperPrevious
+                            >
+                                Back
+                            </button>
+                            <button
+                                class="px-8"
+                                mat-flat-button
+                                [color]="'primary'"
+                                [disabled]="
+                                    verticalStepperStep4.stepControl.pristine ||
+                                    verticalStepperStep4.stepControl.invalid
+                                "
+                                type="button"
+                                matStepperNext
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </mat-step>
+                    <mat-step
+                        [formGroupName]="'step5'"
+                        [stepControl]="verticalStepperForm.get('step5')"
+                        #verticalStepperStep5
+                    >
                         <ng-template matStepLabel>Record Video</ng-template>
                         <p class="my-6 font-medium">
                             Record the video to make it more authentic
@@ -298,8 +376,8 @@
                     </mat-step>
 
                     <mat-step
-                        [formGroupName]="'step5'"
-                        [stepControl]="verticalStepperForm.get('step5')"
+                        [formGroupName]="'step6'"
+                        [stepControl]="verticalStepperForm.get('step6')"
                     >
                         <ng-template matStepLabel>Notifications</ng-template>
                         <p class="my-6 font-medium">

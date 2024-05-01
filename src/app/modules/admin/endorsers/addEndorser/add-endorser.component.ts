@@ -21,11 +21,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
-import { UploadAwsService } from '../../services/upload-aws.service';
 import { VideoRecorderComponent } from 'app/layout/common/video-recorder/video-recorder.component';
 import { VideoTeleprompterComponent } from 'app/layout/common/video-teleprompter/video-teleprompter.component';
 
 import { CommonModule } from '@angular/common';
+import { OpenaiService } from '../../services/openai.service';
 interface Entry {
     label: string;
     value: string;
@@ -80,7 +80,10 @@ export class AddEndorserComponent implements OnInit {
             value: 'other',
         },
     ];
-    constructor(private _formBuilder: UntypedFormBuilder) {}
+    constructor(
+        private _formBuilder: UntypedFormBuilder,
+        private openaiService: OpenaiService
+    ) {}
     ngOnInit(): void {
         this.verticalStepperForm = this._formBuilder.group({
             step1: this._formBuilder.group({
@@ -97,10 +100,14 @@ export class AddEndorserComponent implements OnInit {
                 surveyOption: ['', Validators.required],
             }),
             step4: this._formBuilder.group({
+                emailPrompt: ['', [Validators.required]],
+                emailSubject: ['', [Validators.required]],
+                emailBody: ['', [Validators.required]],
+            }),
+            step5: this._formBuilder.group({
                 video: ['', [Validators.required]],
             }),
-
-            step5: this._formBuilder.group({
+            step6: this._formBuilder.group({
                 byEmail: this._formBuilder.group({
                     companyNews: [true],
                     featuredProducts: [false],
@@ -130,5 +137,16 @@ export class AddEndorserComponent implements OnInit {
                     .patchValue(this.recording);
                 break;
         }
+    }
+    async generateEmail() {
+        this.verticalStepperForm
+            .get('step4')
+            .get('emailBody')
+            .setValue(
+                await this.openaiService.generateText(
+                    this.verticalStepperForm.get('step4').value
+                        .emailPrompt as string
+                )
+            );
     }
 }
